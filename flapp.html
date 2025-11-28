@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird - Mini App</title>
+    <style>
+        body {
+            background: #87CEEB;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial;
+            text-align: center;
+        }
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        canvas {
+            border: 2px solid #2c3e50;
+            border-radius: 10px;
+            background: #E0F7FA;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐦 Flappy Bird</h1>
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
+    
+    <script>
+        // Простая версия Flappy Bird для теста
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let bird = { x: 50, y: 150, size: 20, velocity: 0, gravity: 0.5 };
+        let gameStarted = false;
+        
+        function drawBird() {
+            ctx.fillStyle = '#f39c12';
+            ctx.beginPath();
+            ctx.arc(bird.x, bird.y, bird.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Глаз
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(bird.x + 8, bird.y - 5, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function update() {
+            if (!gameStarted) return;
+            
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+            
+            // Проверка границ
+            if (bird.y > canvas.height - bird.size) {
+                bird.y = canvas.height - bird.size;
+                gameStarted = false;
+            }
+            
+            if (bird.y < bird.size) {
+                bird.y = bird.size;
+            }
+        }
+        
+        function draw() {
+            // Очистка
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Земля
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+            
+            drawBird();
+            
+            // Инструкция
+            if (!gameStarted) {
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText('Нажми чтобы начать!', 80, 100);
+            }
+        }
+        
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Управление
+        canvas.addEventListener('click', function() {
+            if (!gameStarted) {
+                gameStarted = true;
+                bird.y = 150;
+                bird.velocity = 0;
+            }
+            bird.velocity = -8;
+        });
+        
+        // Telegram Web App
+        if (typeof Telegram !== 'undefined') {
+            Telegram.WebApp.expand();
+            Telegram.WebApp.setBackgroundColor('#87CEEB');
+        }
+        
+        // Запуск игры
+        gameLoop();
+        
+        console.log('Flappy Bird Mini App загружен!');
+    </script>
+</body>
+</html>
